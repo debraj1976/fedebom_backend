@@ -6,19 +6,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.example.parthistoryservice.repositories.PartHistoryRepository;
+import com.example.parthistoryservice.repositories.PartRepository;
+import com.example.parthistoryservice.repositories.PartRepository2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.parthistoryservice.models.Part;
 import com.example.parthistoryservice.models.PartHistory;
@@ -34,10 +33,39 @@ public class PartHistoryController {
 	@Autowired
 	private PartHistoryService partHistoryService;
 
+	@Autowired
+	private PartRepository partRepository;
+
+	@Autowired
+	private PartRepository2 partRepository2;
+
+	@Autowired
+	private PartHistoryRepository partHistoryRepository;
+
 	@GetMapping(produces = { "application/json" })
 	public ResponseEntity<List<Part>> getAllParts() {
 		final List<Part> parts = this.partHistoryService.findAllParts();
 		return new ResponseEntity<List<Part>>(parts, HttpStatus.OK);
+	}
+
+	@PostMapping(path = {"/savepart"}, produces = { "application/json" })
+	public ResponseEntity<Part> savePart(@RequestBody Part part){
+
+		Part _part = partRepository.save(part);
+
+		return new ResponseEntity(_part, HttpStatus.CREATED);
+
+	}
+
+	@PostMapping(path = {"/saveparthistory/{part_id}"}, produces = { "application/json" })
+	public ResponseEntity<PartHistory> savePartHistory(@RequestBody PartHistory partHistory,@PathVariable("part_id") final Long partId ){
+
+		Part part = partRepository2.getOne(partId);
+		partHistory.setPart(part);
+		PartHistory _parthistory = partHistoryRepository.save(partHistory);
+
+		return new ResponseEntity(_parthistory, HttpStatus.CREATED);
+
 	}
 
 	@GetMapping(path = { "/history/{id}" }, produces = { "application/json" })
@@ -72,6 +100,7 @@ public class PartHistoryController {
 		}
 		return new ResponseEntity<List<PartHistory>>(partHistories, HttpStatus.OK);
 	}
+
 
 	private List<PartHistory> getPartHistories(final List<Part> parts) {
 		if (!CollectionUtils.isEmpty(parts)) {

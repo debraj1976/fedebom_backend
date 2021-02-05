@@ -38,6 +38,8 @@ public class PartHistoryServiceImpl implements PartHistoryService {
 		return this.partHistoryRepository.findByPartAndDates(id, fromDate, toDate).getHistories();
 	}
 
+	//this.partRepository.save(Part);
+
 	public List<Part> findByCriteria(final String base, final String prefix, final String suffix, final Long usageId) {
 		return this.partRepository.findAllByCriteria(base, prefix, suffix, usageId);
 	}

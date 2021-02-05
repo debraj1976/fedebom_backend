@@ -1,7 +1,10 @@
 package com.example.parthistoryservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,8 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "PartHistory")
@@ -37,9 +38,9 @@ public class PartHistory implements Serializable {
 	private Date createdDateTime;
 	@Column(name = "updated_date_time", columnDefinition = "TIMESTAMP")
 	private Date updatedDateTime;
-	@JsonIgnore
+    @JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "partId", nullable = false)
+	@JoinColumn(name = "part_Id", nullable = false)
 	private Part part;
 
 	public Long getId() {
@@ -121,4 +122,6 @@ public class PartHistory implements Serializable {
 	public void setNewValue(final String newValue) {
 		this.newValue = newValue;
 	}
+
+
 }
